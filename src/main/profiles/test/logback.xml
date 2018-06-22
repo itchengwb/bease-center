@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<configuration>
+    <!--项目名称，用于log名的前缀-->
+    <property name="PROJECT_NAME" value="app-middle" />
+     <property name="SEVER_NAME" value="web" />
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径 -->
+    <property name="LOG_HOME" value="/xdfapp/logs/${PROJECT_NAME}" />
+   <!-- <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        &lt;!&ndash; encoder 默认配置为PatternLayoutEncoder &ndash;&gt;
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %level %class:%line [%thread] [%X{id}] %msg%n</pattern>
+        </encoder>
+    </appender>-->
+
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/${SEVER_NAME}-info.log</File>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %level %class:%line [%thread] [%X{id}]  %msg%n</pattern>
+        </encoder>
+        <!-- 只输出level级别以上的日志 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+        <!--日志按天备份-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/${SEVER_NAME}-info.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/${SEVER_NAME}-error.log</File>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %level %class:%line [%thread] [%X{id}]  %msg%n</pattern>
+        </encoder>
+        <!-- 只输出level级别以上的日志 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>warn</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY </onMismatch>
+        </filter>
+        <!--日志按天备份-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/${SEVER_NAME}-error.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!--统计-->
+    <appender name="statistics" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_HOME}/${SEVER_NAME}-statistics.log</File>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %level %class:%line [%thread] [%X{id}] %msg%n</pattern>
+        </encoder>
+        <!--日志按天备份-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/${SEVER_NAME}-statistics.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+    </appender>
+    <logger name="com.noriental.app.interceptors.HttpRequestInterceptor" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="statistics"/>
+    </logger>
+
+
+    <!--过滤找不到VM报error问题-->
+    <logger name="org.apache.velocity" level="WARN" additivity="false"/>
+    <root level="info">
+       <!-- <appender-ref ref="STDOUT" />-->
+        <appender-ref ref="INFO" />
+        <appender-ref ref="ERROR" />
+    </root>
+</configuration>
